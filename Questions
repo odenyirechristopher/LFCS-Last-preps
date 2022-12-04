@@ -1,0 +1,139 @@
+Linux Foundation Certified Systems Administrator
+
+Task 1 of 24(Task Weight: 4%)
+
+For this item, you should ssh to the node exam-2 and complete all tasks on this node. Ensure that you return to the base node (hostname: node-1) when you have completed this item.
+Context:-
+New administrators have been assigned for the server you are in charge of. So far you have been using the root account directly, but now it seems more appropriate to restrict the root account and allow all administrators to gain root privileges whenever needed.
+Task
+Perform the following tasks to increase the security of the exam-2 server.
+	Change the password of the local root account to BBaa11cc  # passwd root
+	Create a new local group named powerusers   # groupadd powerusers
+	Leaving the primary group as is; add the existing local users ronald, john and paul to group powerusers.
+(Creating the users: #useradd useraccount)
+	Using appropriate sudo configuration, permit local user molly to execute any command as root without being prompted for a password
+$ sudo su –
+$ useradd molly
+$ mkdir /home/molly
+Theory - solution
+Resetting the Root Password
+1.	Log in to the server with the root user using your existing password.
+2.	Now, to change the password for the root user, enter the command: passwd root.
+3.	On the new password prompt, provide the new password a couple of times and then hit enter.
+4.	The root user's password has now been changed.
+Creating a group
+Enter the following command to add a new group: 
+Enter your password to complete addgroup with root privileges.
+
+Commands - Solution
+Changing password
+$ sudo su - #Changing to root account
+$ passwd 
+Change the password to BBaa11cc
+Creating a new local group powerusers
+$ groupadd powerusers
+Leaving the primary group as is; add the existing local users ronald, john and paul to group powerusers.
+$ usermod -a -G powerusers ronald
+$ usermod -a -G powerusers john
+$ usermod -a -G powerusers paul
+Using appropriate sudo configuration, permit local user molly to execute any command as root without being prompted for a password
+$ sudo visudo -f /etc/sudoers
+Change and add a sentence down there
+$ molly ALL=(ALL) NOPASSWD:ALL      # %admin ALL=(ALL) NOPASSWD: ALL
+Notes
+Edit the sudoers file
+Open a Terminal window. Type in sudo visudo. Add the following line to the END of the file (if not at the end it can be nullified by later entries):
+<username> ALL=NOPASSWD: ALL
+Replace <username> with your username (without the <>). This is assuming that Ubuntu has created a group with the same name as your user name, which is typical. You can alternately use the group users or any other such group you are in. Just make sure you are in that group. This can be checked by going to System -> Administration -> Users and Groups.
+Example:
+michael ALL=NOPASSWD: ALL
+
+
+Task 2 of 24(Task Weight: 2%)
+
+Context
+A test/development server under your management is running low on resources. In order to give everyone a fair share and equal opportunity to make use of this server, you have been asked to limit available resources. One privileged user shall, however, be excluded from resource limitation.
+Task
+Configure resource limits for local group devops, so that a maximum of 15 processes can be started.
+Edit /etc/security/limits.conf using any editor
+# @devops          hard    nproc           15
+# @devops          soft     nproc           15
+This process limit is to be configured with hard and soft limit equivalency.
+Configure resources limits for local user ronald, so that this user is not affected by the above process limitation, but only by the system’s defaults for non-root users, i.e so that an unlimited number of processes can be started.
+This process limit exclusion is to be configured with hard and soft limit equivalency.
+Edit /etc/security/limits.conf using any editor and have the hard and soft limits for nprocs as unlimited
+$sudo nano /etc/security/limits.conf
+$sudo vi /etc/security/limits.conf
+
+@ronald  soft  cpu  unlimited  # max cpu time in minutes
+@ronald  hard  cpu  unlimited # max cpu time in minutes
+Solution:
+Theory 
+pam_limits is preconfigured on most systems that have PAM installed. All you should need to do is edit /etc/security/limits.conf to configure specific limits for users and groups.
+Check the CPU use limit with $ ulimit –t.
+To set new limit, open limits.conf with the following command:
+$ sudo nano /etc/security/limits.conf
+Scroll to the end of the file and add following lines:
+username  soft  cpu  0  # max cpu time in minutes
+username  hard  cpu  1000 # max cpu time in minutes
+
+Task 3 of 24 
+
+Task weight: 6%
+
+Context
+You have been asked to perform various tasks on a libvirt managed domain on your server.
+Task
+Perform the following tasks to configure the domain approximately:
+	Set domain webserver to autostart on boot                  # virsh autostart webserver
+	Start the webserver domain                                             # virsh start webserver
+Solutions 
+virsh list: - To list running virtual machines:
+virsh start <guestname> :- To start a virtual machine:
+Similarly, to start a virtual machine at boot:
+virsh autostart <guestname>
+Reboot a virtual machine with:
+virsh reboot <guestname>
+The state of virtual machines can be saved to a file in order to be restored later. The following will save the virtual machine state into a file named according to the date:
+virsh save <guestname> save-my.state
+Once saved the virtual machine will no longer be running.
+
+A saved virtual machine can be restored using:
+virsh restore save-my.state
+To shutdown a virtual machine do:
+virsh shutdown <guestname>
+
+Task 4 of 24
+
+Task weight: 8%
+Context
+As the administrator of this system, you have been asked to remove a container which is no longer required, and to start a new one.
+Task
+1.	Remove the labcontainer docker container #
+Correct answer    #docker rm --force labcontainer
+                                 #sudo docker rm --force test
+
+2.	Start a new docker container named persistentcontainer using the memcached image, and ensure that the container starts automatically if the docker daemon is restarted or the host is rebooted
+Correct answer    #docker run --name persistentcontainer --restart always memcached
+
+# docker container create -t --name persistentcontainer memcached
+#docker container start persistentcontainer
+
+OR
+#docker run -t --name persistentcontainer alpine
+# docker container start --attach persistentcontainer
+
+OR
+#docker run --name persistentcontainer -it memcached
+Solution
+Remove the labcontainer docker container
+Check if it running using #docker ps
+If it running, you can either stop it using # docker stop my_container, the remove using #docker rm / my_container,
+Or you can force removing the running container using # docker rm --force my_container
+
+Task 5 of 24
+Task weight: 
+ 
+
+
+
